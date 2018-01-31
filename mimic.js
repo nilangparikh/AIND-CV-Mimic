@@ -134,6 +134,7 @@ detector.addEventListener("onImageResultsSuccess", function(faces, image, timest
 
     // TODO: Call your function to run the game (define it first!)
     // <your code here>
+    checkFace(faces[0]);
   }
 });
 
@@ -160,7 +161,7 @@ function drawFeaturePoints(canvas, img, face) {
     //console.log('FeaturePoint(x): ', featurePoint.x);
     //console.log('FeaturePoint(y): ', featurePoint.y);
     var circle = new Path2D();
-    circle.arc(featurePoint.x, featurePoint.y, 5, 0, 2 * Math.PI);
+    circle.arc(featurePoint.x, featurePoint.y, 2, 0, 2 * Math.PI);
     ctx.fill(circle);
   }
 }
@@ -172,17 +173,20 @@ function drawEmoji(canvas, img, face) {
 
   // TODO: Set the font and style you want for the emoji
   // <your code here>
+  ctx.fillStyle = 'red';
+  ctx.font = '100px serif';
   
   // TODO: Draw it using ctx.strokeText() or fillText()
   // See: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillText
   // TIP: Pick a particular feature point as an anchor so that the emoji sticks to your face
   // <your code here>
-  ctx.fillStyle = 'red';
-  ctx.font = '100px serif';
   ctx.fillText(face.emojis.dominantEmoji, 500, 150);
 }
 
 // TODO: Define any variables and functions to implement the Mimic Me! game mechanics
+var score = 0;
+var total = emojis.length;
+var firstTime = true;
 
 // NOTE:
 // - Remember to call your update function from the "onImageResultsSuccess" event handler above
@@ -196,3 +200,27 @@ function drawEmoji(canvas, img, face) {
 // - Define a game reset function (same as init?), and call it from the onReset() function above
 
 // <your code here>
+function checkFace(face) {
+    // Get random number from 0 to 12 (total od 13).
+    index = Math.floor((Math.random() * 12) + 1);
+
+    //console.log("index: ", index);
+    //console.log("target emoji: ", emojis[index]);
+    //console.log("user's dominant emoji: ", toUnicode(face.emojis.dominantEmoji));
+
+    // Set the the target emoji and check if emoji matches the user's face. If yes, then set the score.
+    if (firstTime) {
+        console.log("Set target emoji #1");
+        setTargetEmoji(emojis[index - 1]);
+        firstTime = false;
+    }
+
+    if (score < total) {
+        if (emojis[index] == toUnicode(face.emojis.dominantEmoji)) {
+            score++;
+            setScore(score, total);
+            console.log("Set target emoji #2");
+            setTargetEmoji(emojis[index - 1]);
+        }
+    }
+}
